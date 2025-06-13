@@ -9,6 +9,12 @@ object ShopListRepositoryImpl: ShopListRepository {
 
     private var autoIncrementId = 0
 
+    init {
+        for (i in 0 until 10){
+            val item = ShopItem("Name $i", i, true)
+            addShopItem(item)
+        }
+    }//инициализация тестового списка из 10 элементов
     override fun addShopItem(shopItem: ShopItem) {
         if (shopItem.id == ShopItem.UNDEFINED_ID){//проверка на новый элемент или мы его редактируем
             shopItem.id = autoIncrementId++//сначала присваеваем id для элемента потом добавляем 1 для уже следующего добавленного элемента
