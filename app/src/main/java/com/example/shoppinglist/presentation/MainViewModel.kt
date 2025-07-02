@@ -1,6 +1,6 @@
 package com.example.shoppinglist.presentation
 
-import android.util.Log
+
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.shoppinglist.data.ShopListRepositoryImpl
@@ -20,21 +20,18 @@ class MainViewModel: ViewModel() {//пишем ViewModel а не AndroidViewMode
     private val deleteShopItemUseCase = DeleteShopItemUseCase(repository)
     private val editShopItemUseCase = EditShopItemUseCase(repository)
     // создаем лист из покупок через LiveData для сохранения состояния на экране и подписки на него
-    val shopList = MutableLiveData<List<ShopItem>>()//MutableLiveData это обычный LiveData но в которую мы сами можем вставлять данные и подписчики сразу получат эти данные
+    //MutableLiveData это обычный LiveData но в которую мы сами можем вставлять данные и подписчики сразу получат эти данные
 
-    fun getShopList() {
-        val list = getShopListUseCase.getShopList()
-        shopList.postValue(list)// выбираем этот метод (PostValue) тк мы его сможем использовать не только в главном потоке
-    }
+    val shopList = getShopListUseCase.getShopList()//полчуаем список элементов с liveData
+
+
     fun deleteShopItem(shopItem: ShopItem){
         deleteShopItemUseCase.deleteShopItem(shopItem)
-        getShopList()
     }
     fun changeEnabledStateShopItem(shopItem: ShopItem){
         val newShopItem = shopItem.copy(enabled = !shopItem.enabled)//создаем полную копию нашего объекта и
         // меняем состояние enabled на противоположное
         editShopItemUseCase.editShopItem(newShopItem)//тут это работает тк сохраняется id старого
         // элемента и мы его ищем а затем меняем на новый
-        getShopList()
     }
 }
