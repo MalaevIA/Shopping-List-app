@@ -1,5 +1,7 @@
 package com.example.shoppinglist.domain
 
+import androidx.lifecycle.LiveData
+
 interface ShopListRepository {
 
     fun addShopItem(shopItem: ShopItem)
@@ -10,6 +12,7 @@ interface ShopListRepository {
 
     fun getShopItemDyId(shopItemId:Int):ShopItem
 
-    fun getShopList():List<ShopItem>
+    fun getShopList(): LiveData<List<ShopItem>>// делаем возвращаемый тип данных LiveData
+    // для автоматического измеения данных в Activity
 
 }
