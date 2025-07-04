@@ -2,23 +2,48 @@ package com.example.shoppinglist.presentation
 
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ReportFragment.Companion.reportFragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.shoppinglist.R
+import com.example.shoppinglist.domain.ShopItem
 
 class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: MainViewModel
+    private lateinit var llShopList: LinearLayout
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
+        llShopList = findViewById(R.id.ll_shop_list)
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         viewModel.shopList.observe(this){
-            Log.d("MainActivityTest", it.toString())//2025-06-13 17:06:45.051  6976-6976  MainActivityTest        com.example.shoppinglist             D  [ShopItem(name=Name 0, count=0, enabled=true, id=0), ShopItem(name=Name 1, count=1, enabled=true, id=1), ShopItem(name=Name 2, count=2, enabled=true, id=2), ShopItem(name=Name 3, count=3, enabled=true, id=3), ShopItem(name=Name 4, count=4, enabled=true, id=4), ShopItem(name=Name 5, count=5, enabled=true, id=5), ShopItem(name=Name 6, count=6, enabled=true, id=6), ShopItem(name=Name 7, count=7, enabled=true, id=7), ShopItem(name=Name 8, count=8, enabled=true, id=8), ShopItem(name=Name 9, count=9, enabled=true, id=9)]
+            ShowList(it)
         }//подписка на элемент
 
-
-
+    }
+    private fun ShowList(list: List<ShopItem>){
+        llShopList.removeAllViews()
+        for (item in list){
+            val idLayout = if(item.enabled){
+                R.layout.item_shop_enabled
+            }else{
+                R.layout.item_shop_disabled
+            }
+            val view = LayoutInflater.from(this).inflate(idLayout,llShopList,false)
+            val tvName = view.findViewById<TextView>(R.id.tv_name)
+            val tvCount = view.findViewById<TextView>(R.id.tv_count)
+            tvName.text = item.name
+            tvCount.text = item.count.toString()
+            llShopList.addView(view)
+            view.setOnLongClickListener{
+                viewModel.changeEnabledStateShopItem(item)
+                true
+            }
+        }
     }
 }

@@ -7,14 +7,16 @@ import com.example.shoppinglist.domain.ShopListRepository
 
 object ShopListRepositoryImpl: ShopListRepository {
     //инициализируем пустой список из ShopItem
-    private val shopList = mutableListOf<ShopItem>()
+    private val shopList = sortedSetOf<ShopItem>({o1, o2 -> o1.id compareTo o2.id})//это тот же наш список но мы его сортируем по id
+    // элементов чтобы функция редактирования элементов не меняла элементы местами
+
     //Создаем объект типа  LiveData, который мы будем возвращать
     private val shopListLiveData = MutableLiveData<List<ShopItem>>()
 
     private var autoIncrementId = 0
 
     init {
-        for (i in 0 until 10){
+        for (i in 0 until 20){
             val item = ShopItem("Name $i", i, true)
             addShopItem(item)
         }
