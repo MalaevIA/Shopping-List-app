@@ -18,9 +18,14 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
         }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ShopItemViewHolder {
+        val layout = when(viewType){
+            VIEW_TYPE_DISABLED -> R.layout.item_shop_disabled
+            VIEW_TYPE_ENABLED -> R.layout.item_shop_enabled
+            else -> throw RuntimeException("Unknown view type: $viewType")
+        }
         // как создавать VIew
         val view = LayoutInflater.from(parent.context).inflate(
-            R.layout.item_shop_disabled,
+            layout,
             parent,
             false
         )
@@ -34,25 +39,21 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
     override fun onBindViewHolder(holder: ShopItemViewHolder, position: Int) {
         // как вставить значения внутри view
         val shopItem = shopList[position]
-        val status = if (shopItem.enabled){
-            "Active"
-        }else{
-            "Not active"
-        }
-        holder.tvName.text = "${shopItem.name} $status"
+
+        holder.tvName.text = "${shopItem.name}"
         holder.tvCount.text = shopItem.count.toString()
         holder.view.setOnLongClickListener{
             true
         }
-        if(shopItem.enabled){
-            holder.tvName.setTextColor(ContextCompat.getColor(holder.view.context, android.R.color.holo_red_light))
-        }//установка цвета текста при активном состоянии
-
     }
 
     override fun onViewRecycled(holder: ShopItemViewHolder) {
         super.onViewRecycled(holder)
         holder.tvName.setTextColor(ContextCompat.getColor(holder.view.context, android.R.color.white))
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return if (shopList[position].enabled) VIEW_TYPE_ENABLED else VIEW_TYPE_DISABLED
     }
     class ShopItemViewHolder(val view: View):RecyclerView.ViewHolder(view){//вьюхолдер нужен для
         // уменьшения кол-ва вызовов методов инфлэйт и файнд вью бай айди
@@ -62,4 +63,10 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
     }
 
     override fun getItemCount() = shopList.size
+
+    companion object {
+        const val VIEW_TYPE_ENABLED = 100
+        const val VIEW_TYPE_DISABLED = 101
+        const val MAX_PULL_SIZE = 25
+    }
 }
