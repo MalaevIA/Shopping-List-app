@@ -2,12 +2,8 @@ package com.example.shoppinglist.presentation
 
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ReportFragment.Companion.reportFragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -24,7 +20,7 @@ class MainActivity : AppCompatActivity() {
         setupRecycleView()
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         viewModel.shopList.observe(this){
-            shopListAdapter.shopList = it
+            shopListAdapter.submitList(it)// новый метод для обновления списка из лист адаптера
         }//подписка на элемент
 
     }
@@ -60,7 +56,7 @@ class MainActivity : AppCompatActivity() {
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val position = viewHolder.adapterPosition
-                val deletedShopItem: ShopItem = shopListAdapter.shopList[position]
+                val deletedShopItem: ShopItem = shopListAdapter.currentList[position]//получаем нудный элемент по позиции
                 viewModel.deleteShopItem(deletedShopItem)
                 //shopListAdapter.notifyItemRemoved(position)//
             }

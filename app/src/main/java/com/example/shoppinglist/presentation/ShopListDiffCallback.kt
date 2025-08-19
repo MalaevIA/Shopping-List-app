@@ -3,7 +3,7 @@ package com.example.shoppinglist.presentation
 import androidx.recyclerview.widget.DiffUtil
 import com.example.shoppinglist.domain.ShopItem
 
-class ShopListDiffCallback(private val oldList: List<ShopItem>,
+class ShopListDiffCallback(private val oldList: List<ShopItem>,//этот класс теперь не используется
     private val newList: List<ShopItem>):DiffUtil.Callback() {
     override fun getOldListSize(): Int = oldList.size
 
