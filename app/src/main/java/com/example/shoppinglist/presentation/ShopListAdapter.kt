@@ -1,11 +1,11 @@
 package com.example.shoppinglist.presentation
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shoppinglist.R
 import com.example.shoppinglist.domain.ShopItem
@@ -13,10 +13,13 @@ import com.example.shoppinglist.domain.ShopItem
 class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>(){
     var shopList = listOf<ShopItem>()
         set(value){
-            field = value
-            notifyDataSetChanged()//говорим списку обновляться после установки значения
+            val callback = ShopListDiffCallback(shopList, value)//создаем объект колбэк для сравнения
+            val diffResult = DiffUtil.calculateDiff(callback)//сравниваем объекты старого и нового списка
+            diffResult.dispatchUpdatesTo(this)//получаем какие конкретно действия нужны для обновления списка
+            field = value//обновление списка
         }
-
+    var onShopItemLongClickListener: ((ShopItem) -> Unit)? = null
+    var onShopItemClickListener:((ShopItem)-> Unit)? = null
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ShopItemViewHolder {
         val layout = when(viewType){
             VIEW_TYPE_DISABLED -> R.layout.item_shop_disabled
@@ -43,7 +46,11 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
         holder.tvName.text = "${shopItem.name}"
         holder.tvCount.text = shopItem.count.toString()
         holder.view.setOnLongClickListener{
+            onShopItemLongClickListener?.invoke(shopItem)
             true
+        }
+        holder.view.setOnClickListener{
+            onShopItemClickListener?.invoke(shopItem)
         }
     }
 
@@ -63,6 +70,12 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
     }
 
     override fun getItemCount() = shopList.size
+
+    interface OnShopItemLongClickListener{
+        fun onShopItemClick(shopItem: ShopItem){
+
+        }
+    }
 
     companion object {
         const val VIEW_TYPE_ENABLED = 100
