@@ -1,6 +1,5 @@
 package com.example.shoppinglist.presentation
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,7 +15,8 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
             field = value
             notifyDataSetChanged()//говорим списку обновляться после установки значения
         }
-
+    var onShopItemLongClickListener: ((ShopItem) -> Unit)? = null
+    var onShopItemClickListener:((ShopItem)-> Unit)? = null
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ShopItemViewHolder {
         val layout = when(viewType){
             VIEW_TYPE_DISABLED -> R.layout.item_shop_disabled
@@ -43,7 +43,11 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
         holder.tvName.text = "${shopItem.name}"
         holder.tvCount.text = shopItem.count.toString()
         holder.view.setOnLongClickListener{
+            onShopItemLongClickListener?.invoke(shopItem)
             true
+        }
+        holder.view.setOnClickListener{
+            onShopItemClickListener?.invoke(shopItem)
         }
     }
 
@@ -63,6 +67,12 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
     }
 
     override fun getItemCount() = shopList.size
+
+    interface OnShopItemLongClickListener{
+        fun onShopItemClick(shopItem: ShopItem){
+
+        }
+    }
 
     companion object {
         const val VIEW_TYPE_ENABLED = 100
