@@ -19,30 +19,44 @@ class ShopItemViewModel:ViewModel() {
     val errorInputName:LiveData<Boolean> //переопределяем геттер у переменной чтобы он давал
         //значение из пременной _errorInputName в другой части программы, но изменять его будет нельзя
         get() = _errorInputName
-
+    private val _errorInputCount = MutableLiveData<Boolean>()
+    val errorInputCount:LiveData<Boolean>
+        get() = _errorInputCount
+    private val _shopItem = MutableLiveData<ShopItem>()
+    val shopItem : LiveData<ShopItem>
+        get() = _shopItem
+    private val _permissionOnClose = MutableLiveData<Unit>()
+    val permissionOnClose: LiveData<Unit>
+        get() = _permissionOnClose
     fun addShopItem(inputName: String?, inoutCount:String?){
         val name = parseName(inputName)
         val count = parseCount(inoutCount)
-        val fielssValid = validateInput(name,count)
-        if (fielssValid){
+        val fieldsValid = validateInput(name,count)
+        if (fieldsValid){
             val shopItem = ShopItem(name,count,true)
             addShopItemUseCase.addShopItem(shopItem)
-        }
-
-    }
-    fun editShopItem(inputName: String?, inoutCount:String?){
-        val name = parseName(inputName)
-        val count = parseCount(inoutCount)
-        val fielssValid = validateInput(name,count)
-        if (fielssValid){
-            val shopItem = ShopItem(name,count,true)
-            editShopItemUseCase.editShopItem(shopItem)
+            finishWork()
         }
 
     }
     fun getShopItemById(id: Int){
-        getShopItemByIdUseCase.getShopItemDyId(id)
+        val item = getShopItemByIdUseCase.getShopItemDyId(id)
+        _shopItem.value = item
     }
+    fun editShopItem(inputName: String?, inoutCount:String?){
+        val name = parseName(inputName)
+        val count = parseCount(inoutCount)
+        val fieldsValid = validateInput(name,count)
+        if (fieldsValid){
+             _shopItem.value?.let {
+                 val item = it.copy(name = name, count = count)
+                 editShopItemUseCase.editShopItem(item)
+                 finishWork()
+             }
+        }
+
+    }
+
     private fun parseName(InputName:String?):String{
         return InputName?.trim() ?: ""
     }
@@ -60,12 +74,18 @@ class ShopItemViewModel:ViewModel() {
             result = false
         }
         if (count <= 0){
+            _errorInputCount.value = true
             result = false
-            _errorInputName.value = true
         }
         return result
     }
     public fun resetErrorInputName(){
         _errorInputName.value = false
+    }
+    public fun resetErrorInputCount(){
+        _errorInputCount.value = false
+    }
+    private fun finishWork(){
+        _permissionOnClose.value = Unit
     }
 }
