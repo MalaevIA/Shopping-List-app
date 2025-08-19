@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shoppinglist.R
 import com.example.shoppinglist.domain.ShopItem
@@ -12,8 +13,10 @@ import com.example.shoppinglist.domain.ShopItem
 class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>(){
     var shopList = listOf<ShopItem>()
         set(value){
-            field = value
-            notifyDataSetChanged()//говорим списку обновляться после установки значения
+            val callback = ShopListDiffCallback(shopList, value)//создаем объект колбэк для сравнения
+            val diffResult = DiffUtil.calculateDiff(callback)//сравниваем объекты старого и нового списка
+            diffResult.dispatchUpdatesTo(this)//получаем какие конкретно действия нужны для обновления списка
+            field = value//обновление списка
         }
     var onShopItemLongClickListener: ((ShopItem) -> Unit)? = null
     var onShopItemClickListener:((ShopItem)-> Unit)? = null
