@@ -31,12 +31,12 @@ class ShopItemActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_shop_item)
-        parseIntent()
-        viewModel = ViewModelProvider(this)[ShopItemViewModel::class.java]
-        iniViews()
-        addTextChangeListeners()
-        launchRightMode()
-        observeViewModel()
+//        parseIntent()
+//        viewModel = ViewModelProvider(this)[ShopItemViewModel::class.java]
+//        iniViews()
+//        addTextChangeListeners()
+//        launchRightMode()
+//        observeViewModel()
     }
 
     private fun observeViewModel(){
