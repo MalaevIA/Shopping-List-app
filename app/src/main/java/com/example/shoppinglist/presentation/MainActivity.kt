@@ -1,6 +1,7 @@
 package com.example.shoppinglist.presentation
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -12,7 +13,7 @@ import com.example.shoppinglist.R
 import com.example.shoppinglist.domain.ShopItem
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(),ShopItemFragment.OnEditingFinishedListener {
 
     private lateinit var viewModel: MainViewModel
     private lateinit var shopListAdapter: ShopListAdapter
@@ -23,8 +24,6 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
         shopItemContainer = findViewById(R.id.shop_item_container)
-
-
 
         setupRecycleView()
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
@@ -42,6 +41,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
     private fun isOnePaneMode():Boolean{
         return shopItemContainer == null
     }
@@ -109,6 +109,11 @@ class MainActivity : AppCompatActivity() {
         shopListAdapter.onShopItemLongClickListener = {
             viewModel.changeEnabledStateShopItem(it)
         }
+    }
+
+    override fun onEditingFinished() {
+        Toast.makeText(this@MainActivity,"Success", Toast.LENGTH_SHORT).show()
+        supportFragmentManager.popBackStack()
     }
 
 
